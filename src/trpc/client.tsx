@@ -25,7 +25,7 @@ function getUrl() {
   const base = (() => {
     if (typeof window !== 'undefined') return '';
     if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-    return 'http://localhost:3000';
+    return 'http://localhost:3000'; // Server is running on port 3000
   })();
   return `${base}/api/trpc`;
 }
@@ -45,6 +45,12 @@ export function TRPCReactProvider(
         httpBatchLink({
           // transformer: superjson, <-- if you use a data transformer
           url: getUrl(),
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: 'include', // Include cookies for authentication
+            });
+          },
         }),
       ],
     }),

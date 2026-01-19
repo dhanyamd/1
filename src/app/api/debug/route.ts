@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
 
 export async function GET() {
@@ -21,5 +21,42 @@ export async function GET() {
       error: error?.message,
       googleClientId: process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET'
     });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth.api.getSession({
+      headers: request.headers
+    });
+
+    return NextResponse.json({
+      session: session ? {
+        user: session.user ? {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.name
+        } : null,
+        sessionData: session.session
+      } : null,
+      cookies: request.cookies.getAll().map(c => ({
+        name: c.name,
+        value: c.value.substring(0, 50) + '...',
+        hasValue: !!c.value
+      })),
+      cookieHeader: request.headers.get('cookie'),
+      authHeaders: Object.keys(Object.fromEntries(request.headers.entries())).filter(h =>
+        h.toLowerCase().includes('auth') || h.toLowerCase().includes('cookie') || h.toLowerCase().includes('session')
+      ),
+      method: 'POST'
+    });
+  } catch (error) {
+    return NextResponse.json({
+      //@ts-ignore
+      error: error.message,
+            //@ts-ignore
+      stack: error.stack?.substring(0, 500),
+      method: 'POST'
+    }, { status: 500 });
   }
 }
