@@ -1,9 +1,18 @@
 import { z } from 'zod';
+import {generateText} from "ai"
 import { baseProcedure, createTRPCRouter, protectedProcedure } from '../init';
 import prisma from '@/lib/db';
 import { inngest } from '@/inngest/client';
+import { google } from '@ai-sdk/google'
 
 export const appRouter = createTRPCRouter({
+
+  testAi: protectedProcedure.mutation(async () => {
+    await inngest.send({
+      name: "execute/ai"
+    });
+    return {success: true, message: "job queued"}
+  }),
   // Get all workflows for the authenticated user
   getWorkflows: protectedProcedure.query(async ({ ctx }) => {
     return prisma.workflow.findMany({
