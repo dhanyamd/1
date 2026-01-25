@@ -27,6 +27,11 @@ export const execute = inngest.createFunction(
         model: openai("gpt-4o"),
         system: "you are a helpful assistant",
         prompt: "what is 2+2?",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        }
     }
   ); 
   const {steps: anthropicsteps} = await step.ai.wrap(
