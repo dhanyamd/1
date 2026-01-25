@@ -45,7 +45,7 @@ export function AuthWidget() {
         },
         body: JSON.stringify({
           email: email,
-          callbackURL: "/dashboard",
+          callbackURL: "/workflows",
         }),
       });
 

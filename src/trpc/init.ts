@@ -3,6 +3,7 @@ import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { cache } from 'react';
+import { polarClient } from '@/lib/polar';
 
 export async function createTRPCContext(opts: { req: Request } | { req: any; res: any } | undefined = undefined) {
   // For API routes (fetch adapter)
@@ -76,3 +77,18 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
     },
   });
 });
+
+export const premiumProcedure = protectedProcedure.use(
+  async ({ctx, next}) => {
+    const customer = await polarClient.customers.getStateExternal({
+      externalId: ctx.user.id
+    })
+    if (!customer.activeSubscriptions || customer.activeSubscriptions.length === 0){
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Active subscription required"
+      });
+    }
+    return next({ctx: {...ctx, customer}})
+  }
+)

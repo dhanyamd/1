@@ -5,6 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupConte
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
+import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscription"
 
  
 
@@ -34,13 +35,14 @@ const menuitems = [
 export const AppSidebar = () => {
     const router = useRouter();
     const pathname = usePathname();
+    const {hasActiveSubscription, isLoading} = useHasActiveSubscription();
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
                         <Link href="/" prefetch>
-                        <span className="font-semibold text-sm">MIRO</span>
+                        <span className="font-semibold text-sm">MIRA</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -73,29 +75,36 @@ export const AppSidebar = () => {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
+                    {!hasActiveSubscription && !isLoading && (
+                    <SidebarMenuItem>
                     <SidebarMenuButton
                     tooltip="Upgrade to pro"
                     className="gp-x-4 h-10 px-4"
-                    onClick={()=>{}}
+                    onClick={()=> authClient.checkout({slug: "MIRA"})}
                     >
-                        <StarIcon className="h-4 w-4"/>
-                        <span>Upgrade to Pro</span>
+                    <StarIcon className="h-4 w-4"/>
+                    <span>Upgrade to Pro</span>
                     </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    )}
+                    <SidebarMenuItem>
                     <SidebarMenuButton
                     tooltip="Billing Portal"
                     className="gp-x-4 h-10 px-4"
-                    onClick={()=>{}}
+                    onClick={()=> authClient.customer.portal()}
                     >
                         <CreditCardIcon className="h-4 w-4"/>
                         <span>Billing Portal</span>
                     </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
                     <SidebarMenuButton
                     tooltip="Sign out"
                     className="gap-x-4 h-10 px-4"
                     onClick={()=> authClient.signOut({
                         fetchOptions: {
                             onSuccess: () => {
-                                router.push("/login")
+                                router.push("/")
                             }
                         }
                     })}
@@ -103,6 +112,7 @@ export const AppSidebar = () => {
                         <LogOutIcon className="h-4 w-4"/>
                         <span>Sign out</span>
                     </SidebarMenuButton>
+                    </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
         </Sidebar>
