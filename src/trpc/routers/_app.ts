@@ -23,7 +23,7 @@ export const appRouter = createTRPCRouter({
   }),
 
   // Create a new workflow (requires authentication)
-  createWorkflow: protectedProcedure
+  createWorkflow: premiumProcedure
     .input(z.object({
       name: z.string().min(1, "Workflow name is required").max(100, "Name too long")
     }))
