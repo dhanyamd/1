@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import { inngest } from '@/inngest/client';
 import { google } from '@ai-sdk/google'
 import { workflowsRouter } from '@/features/workflows/server/route';
+import { PAGINATION } from '@/config/constants';
 
 export const appRouter = createTRPCRouter({
   workflows: workflowsRouter,
@@ -15,12 +16,47 @@ export const appRouter = createTRPCRouter({
     return {success: true, message: "job queued"}
   }),
   // Get all workflows for the authenticated user
-  getWorkflows: protectedProcedure.query(async ({ ctx }) => {
-    return prisma.workflow.findMany({
-      where: { userId: ctx.user.id },
-      orderBy: { name: 'asc' }
-    });
-  }),
+  getWorkflows: protectedProcedure
+    .input(
+      z.object({
+        page: z.number().default(PAGINATION.DEFAULT_PAGE),
+        pageSize: z
+          .number()
+          .min(PAGINATION.MIN_PAGE_SIZE)
+          .max(PAGINATION.MAX_PAGE_SIZE)
+          .default(PAGINATION.DEFAULT_PAGE_SIZE),
+        search: z.string().default(""),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, pageSize, search } = input;
+      const [items, totalCount] = await Promise.all([
+        prisma.workflow.findMany({
+          skip: (page -1)*pageSize,
+          take: pageSize,
+          where: {
+            userId: ctx.user.id,
+            name: {
+              contains: search,
+              mode: "insensitive"
+            }
+          },
+          orderBy: {
+            updatedAt: "desc" 
+          }
+        }),
+
+        prisma.workflow.count({
+          where: {
+            userId: ctx.user.id,
+          },
+        }),
+      ]);
+      const totalPages = Math.ceil(totalCount /pageSize)
+      const hasNextPage = page < totalPages;
+      const hasPreviousPage = page > 1;
+      return { items: items, page, pageSize, totalCount, totalPages, hasNextPage, hasPreviousPage };
+    }),
 
   // Create a new workflow (requires authentication)
   createWorkflow: premiumProcedure
@@ -35,7 +71,6 @@ export const appRouter = createTRPCRouter({
         }
       });
     }),
-    
 
   // Get a specific workflow by ID (requires authentication and ownership)
   getWorkflow: protectedProcedure
@@ -101,7 +136,7 @@ export const appRouter = createTRPCRouter({
       return prisma.workflow.delete({
         where: { id: input.id }
       });
-    })
+    }),
 });
-// export type definition of API
+
 export type AppRouter = typeof appRouter;
