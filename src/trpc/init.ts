@@ -2,9 +2,8 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { cache } from 'react';
 import { polarClient } from '@/lib/polar';
-
+import superjson from "superjson"
 export async function createTRPCContext(opts: { req: Request } | { req: any; res: any } | undefined = undefined) {
   // For API routes (fetch adapter)
   if (opts && 'req' in opts && opts.req && !(opts as any).res) {
@@ -51,7 +50,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   /**
    * @see https://trpc.io/docs/server/data-transformers
    */
-  // transformer: superjson,
+    transformer: superjson,
 });
 
 // Base router and procedure helpers

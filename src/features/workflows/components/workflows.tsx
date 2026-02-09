@@ -1,10 +1,13 @@
 'use client'
-import { EmptyView, EntityContainer, EntityHeader, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
+import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
 import { useUpgradeModal } from "../hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParama } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
+import { Workflow } from "@/generated/prisma/client";
+import { WorkflowIcon } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 export const WorkflowsSearch = () => {
     const [params, setParams] = useWorkflowsParama();
@@ -41,7 +44,7 @@ export const WorkflowList = () => {
         <EntityList 
         items={workfows.data.items}
         getKey={(workfow) => workfow.id}
-        renderItem={(workflow) => <p>{workflow.name}</p>}
+        renderItem={(workflow) => <WorkflowItem data={workflow}/>}
         emptyView={<WorkflowsEmpty/>}
             />
     )
@@ -124,5 +127,32 @@ export const WorkflowsEmpty = () => {
         message="No workflows found. Get startedd by creating your first workflow"
         />
         </>
+    )
+}
+
+export const WorkflowItem = ({
+data,
+}: {
+    data: Workflow
+}) => {
+    return (
+        <EntityItem
+        href={ `/workflows/${data.id}`}
+        title={data.name} 
+        subtitle={
+            <>
+            Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
+            &bull; Created{" "}
+            {formatDistanceToNow(data.createdAt, { addSuffix: true })}
+            </>
+        }
+        image={
+            <div className="size8 flex items-center justify-center">
+                <WorkflowIcon className="size-5 text-muted-foreground"/>
+            </div>
+        }
+        onRemove={()=> {}} 
+        isRemoving={false}
+        />
     )
 }
