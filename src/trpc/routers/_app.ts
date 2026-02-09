@@ -138,7 +138,7 @@ export const appRouter = createTRPCRouter({
       }
 
       return prisma.workflow.delete({
-        where: { id: input.id }
+        where: { id: input.id, userId: ctx.user.id }
       });
     }),
 });

@@ -1,6 +1,6 @@
 'use client'
 import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
-import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
 import { useUpgradeModal } from "../hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParama } from "../hooks/use-workflows-params";
@@ -135,6 +135,12 @@ data,
 }: {
     data: Workflow
 }) => {
+    const removeWorkflow = useRemoveWorkflow();
+
+    const handleRemove = () => {
+        removeWorkflow.mutate({id: data.id})
+    }
+
     return (
         <EntityItem
         href={ `/workflows/${data.id}`}
