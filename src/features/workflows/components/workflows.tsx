@@ -1,5 +1,5 @@
 'use client'
-import { EntityContainer, EntityHeader, EntityPagination, EntitySearch } from "@/components/entity-components";
+import { EmptyView, EntityContainer, EntityHeader, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
 import { useUpgradeModal } from "../hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
@@ -36,10 +36,14 @@ export const WorkflowsPagination  = () => {
 
 export const WorkflowList = () => {
     const workfows = useSuspenseWorkflows();
+   
     return (
-        <p>
-            {JSON.stringify(workfows.data, null, 2)}
-        </p>
+        <EntityList 
+        items={workfows.data.items}
+        getKey={(workfow) => workfow.id}
+        renderItem={(workflow) => <p>{workflow.name}</p>}
+        emptyView={<WorkflowsEmpty/>}
+            />
     )
 }
 
@@ -85,5 +89,40 @@ export const WorkflowsContainer = ({
         >
             {children} 
             </EntityContainer>
+    )
+}
+
+
+export const Workflowsloading = () => {
+    return <LoadingView entity="Loading workflows..."/>
+}
+
+export const WorkflowsError = () => {
+    return <ErrorView message="Error loading workflows..."/>
+}
+
+export const WorkflowsEmpty = () => {
+    const createWorkflow = useCreateWorkflow();
+    const {handleError, modal}  = useUpgradeModal();
+    const router = useRouter()
+
+    const handleCreate = () => {
+        createWorkflow.mutate(undefined, {
+            onError: (error) => {
+                handleError(error)
+            },
+            onSuccess: (data) => {
+                router.push(`/workflows/${data.id}`)
+            }
+        })
+    }
+    return (
+        <>
+        {modal}
+        <EmptyView
+        onNew={handleCreate}
+        message="No workflows found. Get startedd by creating your first workflow"
+        />
+        </>
     )
 }
