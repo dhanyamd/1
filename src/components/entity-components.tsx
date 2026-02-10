@@ -5,8 +5,12 @@ import { Input } from "./ui/input";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./ui/empty";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
-import { DropdownMenu } from "./ui/dropdown-menu";
-import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 type EntityHeaderProps = {
     title: string,
@@ -96,7 +100,7 @@ value, onChange, placeholder = "Search"
 }: EntitySearchProps) => {
     return (
         <div className="relative ml-auto">
-            <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"/>
+            <SearchIcon className="size-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"/>
             <Input 
             className="max-w-[200px] bg-background shadow-none"
             placeholder={placeholder}

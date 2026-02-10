@@ -101,23 +101,10 @@ export const appRouter = createTRPCRouter({
       name: z.string().min(1).max(100).optional()
     }))
     .mutation(async ({ ctx, input }) => {
-      const { id, ...updateData } = input;
-
-      // First check if the workflow exists and belongs to the user
-      const existingWorkflow = await prisma.workflow.findFirst({
-        where: {
-          id,
-          userId: ctx.user.id
-        }
-      });
-
-      if (!existingWorkflow) {
-        throw new Error('Workflow not found');
-      }
 
       return prisma.workflow.update({
-        where: { id },
-        data: updateData
+        where: { id: input.id, userId: ctx.user.id },
+        data: {name: input.name}
       });
     }),
 

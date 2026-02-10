@@ -138,8 +138,8 @@ data,
     const removeWorkflow = useRemoveWorkflow();
 
     const handleRemove = () => {
-        removeWorkflow.mutate({id: data.id})
-    }
+        removeWorkflow.mutate({ id: data.id });
+    };
 
     return (
         <EntityItem
@@ -153,12 +153,12 @@ data,
             </>
         }
         image={
-            <div className="size8 flex items-center justify-center">
-                <WorkflowIcon className="size-5 text-muted-foreground"/>
+            <div className="size-8 flex items-center justify-center">
+                <WorkflowIcon className="size-5 text-muted-foreground" />
             </div>
         }
-        onRemove={()=> {}} 
-        isRemoving={false}
+        onRemove={handleRemove}
+        isRemoving={removeWorkflow.isPending}
         />
     )
 }

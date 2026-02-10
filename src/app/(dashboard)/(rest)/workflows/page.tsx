@@ -3,7 +3,7 @@ import { workflowsParamsLoader } from "@/features/workflows/server/params-loader
 import { prefetchWorkflows } from "@/features/workflows/server/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
-import { ErrorBoundary } from "@sentry/nextjs";
+import { ErrorBoundary } from "react-error-boundary"
 import type { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
 
@@ -20,7 +20,7 @@ const Page = async ({searchParams}: Props) => {
     <WorkflowsContainer>
     <HydrateClient>
         <ErrorBoundary fallback={<WorkflowsError/>}>
-        <Suspense fallback={<Workflowsloading />}>
+        <Suspense fallback={<Workflowsloading/>}>
         <WorkflowList/>
         </Suspense>
         </ErrorBoundary>

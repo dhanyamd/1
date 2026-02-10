@@ -1,17 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Workflow } from "@/generated/prisma/client";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function WorkflowManager() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { data: workflows, isLoading, error } = useQuery(trpc.getWorkflows.queryOptions());
+  const { data: workflows, isLoading, error } = useQuery(trpc.getWorkflows.queryOptions({}));
 
   const createWorkflow = useMutation(trpc.createWorkflow.mutationOptions({
     onSuccess: () => {
-      queryClient.invalidateQueries(trpc.getWorkflows.queryOptions());
+      queryClient.invalidateQueries(trpc.getWorkflows.queryOptions({}));
     }
   }));
 
@@ -37,9 +38,9 @@ export function WorkflowManager() {
           <p className="text-gray-400">Loading...</p>
         ) : error ? (
           <p className="text-red-400">Error loading workflows: {error.message}</p>
-        ) : workflows && workflows.length > 0 ? (
+        ) : workflows && workflows.items.length > 0 ? (
           <ul className="space-y-1">
-            {workflows.map((workflow) => (
+            {workflows.items.map((workflow) => (
               <li key={workflow.id} className="text-gray-300 bg-gray-800 p-2 rounded">
                 {workflow.name}
               </li>

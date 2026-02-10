@@ -78,16 +78,43 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const premiumProcedure = protectedProcedure.use(
-  async ({ctx, next}) => {
-    const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.user.id
-    })
-    if (!customer.activeSubscriptions || customer.activeSubscriptions.length === 0){
+  async ({ ctx, next }) => {
+    try {
+      const customer = await polarClient.customers.getStateExternal({
+        externalId: ctx.user.id,
+      });
+
+      if (
+        !customer.activeSubscriptions ||
+        customer.activeSubscriptions.length === 0
+      ) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Active subscription required',
+        });
+      }
+
+      return next({ ctx: { ...ctx, customer } });
+    } catch (error: any) {
+      // If the Polar customer does not exist yet, treat it as "no active subscription"
+      const isNotFound =
+        error?.body?.error === 'ResourceNotFound' ||
+        error?.error === 'ResourceNotFound' ||
+        error?.status === 404;
+
+      if (isNotFound) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Active subscription required',
+        });
+      }
+
+      // Re-throw other unexpected errors as INTERNAL_SERVER_ERROR
       throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "Active subscription required"
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to verify subscription status',
+        cause: error,
       });
     }
-    return next({ctx: {...ctx, customer}})
   }
 )
