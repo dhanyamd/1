@@ -24,6 +24,7 @@ const Page = async ({params} : PageProps) => {
       <EditorHeader workflowId={workflowId}/>
       <main className="flex-1">
       <Editor workflowId={workflowId}/>
+      
       </main>
       </Suspense>
      </ErrorBoundary>
