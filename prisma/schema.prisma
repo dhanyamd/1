@@ -102,7 +102,7 @@ model Workflow {
 }
 
 enum NodeType {
-  INITAL
+  INITIAL
 }
 
 model Node {

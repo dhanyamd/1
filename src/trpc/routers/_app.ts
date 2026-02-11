@@ -1,19 +1,18 @@
 import { z } from 'zod';
-import {generateText} from "ai"
 import { baseProcedure, createTRPCRouter, premiumProcedure, protectedProcedure } from '../init';
 import prisma from '@/lib/db';
 import { inngest } from '@/inngest/client';
-import { google } from '@ai-sdk/google'
 import { workflowsRouter } from '@/features/workflows/server/route';
 import { PAGINATION } from '@/config/constants';
-
+import { NodeType } from '@/generated/prisma/client';
+import type { Node, Edge } from '@xyflow/react';
 export const appRouter = createTRPCRouter({
   workflows: workflowsRouter,
   testAi: premiumProcedure.mutation(async () => {
     await inngest.send({
       name: "execute/ai"
     });
-    return {success: true, message: "job queued"}
+    return { success: true, message: "job queued" }
   }),
   // Get all workflows for the authenticated user
   getWorkflows: protectedProcedure
@@ -32,7 +31,7 @@ export const appRouter = createTRPCRouter({
       const { page, pageSize, search } = input;
       const [items, totalCount] = await Promise.all([
         prisma.workflow.findMany({
-          skip: (page -1)*pageSize,
+          skip: (page - 1) * pageSize,
           take: pageSize,
           where: {
             userId: ctx.user.id,
@@ -42,7 +41,7 @@ export const appRouter = createTRPCRouter({
             }
           },
           orderBy: {
-            updatedAt: "desc" 
+            updatedAt: "desc"
           }
         }),
 
@@ -56,7 +55,7 @@ export const appRouter = createTRPCRouter({
           },
         }),
       ]);
-      const totalPages = Math.ceil(totalCount /pageSize)
+      const totalPages = Math.ceil(totalCount / pageSize)
       const hasNextPage = page < totalPages;
       const hasPreviousPage = page > 1;
       return { items: items, page, pageSize, totalCount, totalPages, hasNextPage, hasPreviousPage };
@@ -71,7 +70,14 @@ export const appRouter = createTRPCRouter({
       return prisma.workflow.create({
         data: {
           name: input.name,
-          userId: ctx.user.id // Associate with the authenticated user
+          userId: ctx.user.id,
+          nodes: {
+            create: {
+              type: NodeType.INITIAL,
+              position: { x: 0, y: 0 },
+              name: NodeType.INITIAL
+            }
+          }
         }
       });
     }),
@@ -83,15 +89,47 @@ export const appRouter = createTRPCRouter({
       const workflow = await prisma.workflow.findFirst({
         where: {
           id: input.id,
-          userId: ctx.user.id // Ensure user owns the workflow
-        }
+          userId: ctx.user.id, // Ensure user owns the workflow
+        },
+        include: { nodes: true, connections: true },
       });
 
-      if (!workflow) {
-        throw new Error('Workflow not found');
-      }
+      const dbNodes = workflow?.nodes ?? [];
 
-      return workflow;
+      // Always return at least one visible node so the editor is never empty.
+      const nodes: Node[] =
+        dbNodes.length > 0
+          ? dbNodes.map((node) => ({
+              id: node.id,
+              // Use the Prisma node type so it matches our custom nodeTypes map.
+              type: node.type as string,
+              position: node.position as { x: number; y: number },
+              // Pass through any stored data; InitialNode renders its own Plus icon.
+              data: (node.data as Record<string, unknown>) || {},
+            }))
+          : [
+              {
+                id: "initial",
+                type: NodeType.INITIAL,
+                position: { x: 0, y: 0 },
+                data: {},
+              },
+            ];
+
+      const edges: Edge[] = workflow?.connections.map((connection) => ({
+        id: connection.id,
+        source: connection.fromNodeId,
+        target: connection.toNodeId,
+        sourceHandle: connection.fromOutput,
+        targetHandle: connection.toInput
+      })) || []
+
+      return {
+        id: workflow?.id,
+        name: workflow?.name,
+        nodes,
+        edges
+      };
     }),
 
   // Update a workflow (requires authentication and ownership)
@@ -104,7 +142,7 @@ export const appRouter = createTRPCRouter({
 
       return prisma.workflow.update({
         where: { id: input.id, userId: ctx.user.id },
-        data: {name: input.name}
+        data: { name: input.name }
       });
     }),
 
