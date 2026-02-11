@@ -6,9 +6,11 @@ import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type Edge, type
     type NodeChange, type EdgeChange, type Connection, 
     Background,
     Controls,
-    MiniMap} from '@xyflow/react';
+    MiniMap,
+    Panel} from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useCallback, useState } from "react";
+import { AddNodeButton } from "./add-node-button";
 
 export const EditorLoading = () => {
     return <LoadingView message="Loading editor... "/>
@@ -48,6 +50,9 @@ export const Editor = ({workflowId}: {workflowId: string}) => {
             <Background/>
             <Controls/>
             <MiniMap/>
+            <Panel position="top-right">
+             <AddNodeButton />
+            </Panel>
             </ReactFlow>   
        </div>
     )
