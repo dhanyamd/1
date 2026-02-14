@@ -27,6 +27,7 @@ export const BaseExecutionNode = memo(
             <WorkflowNode 
             name={name} 
             description={description} 
+            showToolbar
             onDelete={handleDelete}
             onSettings={onSettings}
             >

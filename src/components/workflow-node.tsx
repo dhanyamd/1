@@ -1,6 +1,6 @@
 import { NodeToolbar, Position } from "@xyflow/react";
 import { Button } from "./ui/button";
-import { Settings2Icon, Trash2Icon, TrashIcon } from "lucide-react";
+import {  SettingsIcon, Trash2Icon, TrashIcon } from "lucide-react";
 
 interface WorkflowNodeProps {
  children: React.ReactNode;
@@ -17,9 +17,9 @@ children, showToolbar, onDelete, onSettings, name, description
     return (
         <>
         {showToolbar && (
-            <NodeToolbar>
+            <NodeToolbar position={Position.Top} isVisible>
                 <Button size="sm" variant="ghost" onClick={onSettings}>
-                    <Settings2Icon className="size-4" />
+                    <SettingsIcon className="size-4" />
                 </Button>
                 <Button size="sm" variant="ghost" onClick={onDelete}>
                     <TrashIcon className="size-4" />
