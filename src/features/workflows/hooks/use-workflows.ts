@@ -60,7 +60,7 @@ export const useUpdateWorkflowName = () => {
 
 
     return useMutation(
-        trpc.updateWorkflow.mutationOptions({
+        trpc.updateName.mutationOptions({
             onSuccess: (data) => {
                 toast.success(`Workflow ${data.name} updated`);
                 queryClient.invalidateQueries(
