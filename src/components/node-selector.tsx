@@ -87,7 +87,7 @@ open, onOpenChange, children
                 What triggers this workflow?
             </SheetTitle>
             <SheetDescription>
-                A trigger is a step that starts your workflpw
+                A trigger is a step that starts your workflow
             </SheetDescription>
         </SheetHeader>
         <div>

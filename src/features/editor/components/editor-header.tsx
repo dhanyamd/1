@@ -3,7 +3,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { useSuspenseWorkflow, useUpdateWorkflow } from "@/features/workflows/hooks/use-workflows"
+import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/use-workflows"
 import { SaveIcon } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
@@ -39,7 +39,7 @@ export const EditorBreadcrumbs = ({workflowId}: {workflowId: string}) => {
 export const EditorNameInput = ({workflowId}: {workflowId: string}) => {
     
     const {data: workflow} = useSuspenseWorkflow(workflowId);
-    const updateWorkflow = useUpdateWorkflow();
+    const updateWorkflow = useUpdateWorkflowName();
     const [isEditing, setIsEditing] = useState(false);
     const [name, setName] = useState(workflow.name)
     const inputRef = useRef<HTMLInputElement>(null)

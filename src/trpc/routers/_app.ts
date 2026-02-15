@@ -136,16 +136,68 @@ export const appRouter = createTRPCRouter({
   updateWorkflow: protectedProcedure
     .input(z.object({
       id: z.string(),
-      name: z.string().min(1).max(100).optional()
+      nodes: z.array(
+        z.object({
+          id: z.string(),
+          type: z.string(),
+          position: z.object({x: z.number(), y:z.number()}),
+          data: z.record(z.string(), z.any()).optional()
+        })
+      ),
+      edges: z.array(
+        z.object({
+          source: z.string(),
+          target: z.string(),
+          sourceHandle: z.string().nullish(),
+          targetHandle: z.string().nullish()
+        })
+      )
     }))
     .mutation(async ({ ctx, input }) => {
-
-      return prisma.workflow.update({
-        where: { id: input.id, userId: ctx.user.id },
-        data: { name: input.name }
+      const {id, nodes, edges} = input;
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: {id, userId: ctx.user.id}
+      })
+      return await prisma.$transaction(async (tx) => {
+        await tx.node.deleteMany({
+          where: {workflowId: id}
+        })
+        await tx.node.createMany({
+          data: nodes.map((node) => ({
+            id: node.id,
+            workflowId: id,
+            name: node.type || "unknown",
+            type: node.type as NodeType,
+            position: node.position,
+            data: node.data || {}
+          }))
+        })
+        await tx.connection.createMany({
+          data: edges.map((edge) => ({
+              workflowId: id,
+              fromNodeId: edge.source,
+              toNodeId: edge.target,
+              fromOutput: edge.sourceHandle || "main",
+              toInput: edge.targetHandle || "main",
+          })),
       });
+       await tx.workflow.update({
+        where: {id} ,
+        data: {updatedAt: new Date()}
+       })
+       return workflow;
+      })
+      
+      
     }),
-
+  updateName: protectedProcedure
+    .input(z.object({id: z.string(), name: z.string().min(1)}))
+    .mutation(({ctx, input}) => {
+      return prisma.workflow.update({
+        where: {id : ctx.user.id},
+        data : {name: input.name}
+      })
+    }),
   // Delete a workflow (requires authentication and ownership)
   deleteWorkflow: protectedProcedure
     .input(z.object({ id: z.string() }))
