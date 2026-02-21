@@ -6,6 +6,7 @@ import { memo } from "react";
 import { WorkflowNode } from "./workflow-node";
 import Image from "next/image";
 import { BaseHandle } from "./base-handle";
+import { NodeStatus, NodeStatusIndicator } from "./node-status-indicator";
 
  
 interface BaseExecutionNodeProps extends NodeProps {
@@ -13,14 +14,14 @@ interface BaseExecutionNodeProps extends NodeProps {
     name: string;
     description?: string;
     children?: React.ReactNode;
-   // status?: NodeStatus;
+    status?: NodeStatus;
     onSettings?: () => void; 
     onDoubleClick?: () => void;
 }
 const handleDelete = () => {}
 export const BaseExecutionNode = memo(
     ({
-         id, name, description, children, onSettings, onDoubleClick, icon
+         id, name, status = "initial",  description, children, onSettings, onDoubleClick, icon,
     }: BaseExecutionNodeProps) => {
         const { setEdges, setNodes} = useReactFlow()
         const Icon = icon
@@ -42,7 +43,8 @@ export const BaseExecutionNode = memo(
             onDelete={handleDelete}
             onSettings={onSettings}
             >
-                <BaseNode onDoubleClick={onDoubleClick}>
+                <NodeStatusIndicator variant="border" status={status}>
+                <BaseNode status={status} onDoubleClick={onDoubleClick}>
                 <BaseNodeContent>
                 {typeof Icon === "string" ? (
                     <Image src={Icon} alt={name} width={16}/>
@@ -62,7 +64,7 @@ export const BaseExecutionNode = memo(
                 />
                 </BaseNodeContent>
                 </BaseNode>
-
+                </NodeStatusIndicator>
             </WorkflowNode>
         )
     },

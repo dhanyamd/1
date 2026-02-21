@@ -6,6 +6,7 @@ import Image from "next/image";
 import { WorkflowNode } from "@/components/workflow-node";
 import { BaseNode, BaseNodeContent } from "@/components/base-node";
 import { BaseHandle } from "@/components/base-handle";
+import { NodeStatus, NodeStatusIndicator } from "@/components/node-status-indicator";
 
  
 interface BaseTriggerNodeProps extends NodeProps {
@@ -13,13 +14,13 @@ interface BaseTriggerNodeProps extends NodeProps {
     name: string;
     description?: string;
     children?: React.ReactNode;
-   // status?: NodeStatus;
+    status?: NodeStatus;
     onSettings?: () => void; 
     onDoubleClick?: () => void;
 }
 export const BaseTriggerNode = memo(
     ({
-         id, name, description, children, onSettings, onDoubleClick, icon
+         id, name, description, children, onSettings, onDoubleClick, icon, status="initial"
     }: BaseTriggerNodeProps) => {
         const { setEdges, setNodes} = useReactFlow()
         const Icon = icon
@@ -42,7 +43,8 @@ export const BaseTriggerNode = memo(
             onDelete={handleDelete}
             onSettings={onSettings}
             >
-                <BaseNode onDoubleClick={onDoubleClick} className="rounded-l-2xl relative group">
+            <NodeStatusIndicator status={status} variant="border" className="rounded-l-2xl">
+                <BaseNode status={status} onDoubleClick={onDoubleClick} className="rounded-l-2xl relative group">
                 <BaseNodeContent>
                 {typeof Icon === "string" ? (
                     <Image src={Icon} alt={name} width={16}/>
@@ -58,7 +60,7 @@ export const BaseTriggerNode = memo(
                 />
                 </BaseNodeContent>
                 </BaseNode>
-
+                </NodeStatusIndicator>
             </WorkflowNode>
         )
     },
