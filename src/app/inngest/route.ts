@@ -1,6 +1,7 @@
 import { inngest } from "@/inngest/client";
 import { serve } from "inngest/next";
 import prisma from "@/lib/db";
+import {executeWorkflow} from "@/inngest/functions"
 
 export const helloWorld = inngest.createFunction(
   {id: "hello-world"},
@@ -25,7 +26,7 @@ export const helloWorld = inngest.createFunction(
 export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [
-    helloWorld,
+    executeWorkflow
     /* your functions will be passed here later! */
   ],
 });

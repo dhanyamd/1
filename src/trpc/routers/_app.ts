@@ -7,6 +7,20 @@ import { PAGINATION } from '@/config/constants';
 import { NodeType } from '@/generated/prisma/client';
 import type { Node, Edge } from '@xyflow/react';
 export const appRouter = createTRPCRouter({
+  execute: protectedProcedure
+        .input(z.object({id: z.string()})) 
+        .mutation(async ({input, ctx}) => {
+          const workflow = await prisma.workflow.findUnique({
+            where: {
+              id: input.id,
+              userId: ctx.user.id
+            }
+          })
+          await inngest.send({
+            name: "workflows/execute.workflow"
+          })
+          return workflow
+        }),
   workflows: workflowsRouter,
   testAi: premiumProcedure.mutation(async () => {
     await inngest.send({
