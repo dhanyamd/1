@@ -8,8 +8,8 @@ import { NodeType } from '@/generated/prisma/client';
 import type { Node, Edge } from '@xyflow/react';
 export const appRouter = createTRPCRouter({
   execute: protectedProcedure
-        .input(z.object({id: z.string()})) 
-        .mutation(async ({input, ctx}) => {
+      .input(z.object({id: z.string()})) 
+      .mutation(async ({input, ctx}) => {
           const workflow = await prisma.workflow.findUnique({
             where: {
               id: input.id,
@@ -17,9 +17,10 @@ export const appRouter = createTRPCRouter({
             }
           })
           await inngest.send({
-            name: "workflows/execute.workflow"
+            name: "workflows/execute.workflow",
+            data: {workflowId: input.id}
           })
-          return workflow
+          return workflow;
         }),
   workflows: workflowsRouter,
   testAi: premiumProcedure.mutation(async () => {
