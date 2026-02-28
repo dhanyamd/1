@@ -2,7 +2,7 @@ import { NodeExecutor } from "@/features/lib/types";
 import { NonRetriableError } from "inngest";
 import ky, {type Options as KyOptions} from 'ky'
 type HttpRequestData = {
-    endpoint? : string;
+    endpoint? : string;     
     method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
     body?: string;
 }
