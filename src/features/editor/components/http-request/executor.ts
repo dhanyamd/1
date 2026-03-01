@@ -2,6 +2,7 @@ import { NodeExecutor } from "@/features/lib/types";
 import { NonRetriableError } from "inngest";
 import ky, {type Options as KyOptions} from 'ky'
 import Handlebars from 'handlebars'
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -11,7 +12,7 @@ Handlebars.registerHelper("json", (context) => {
 })
 
 type HttpRequestData = {
-    variableName?: string;
+    variableName: string;
     endpoint : string;     
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
     body?: string;
@@ -22,17 +23,43 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
     data,
     nodeId,
     context,
-    step
+    step,
+    publish
 }) => {
+  await publish(
+    httpRequestChannel().status({
+        nodeId,
+        status: "loading"
+    })
+  )
   if (!data.endpoint){
-        throw new NonRetriableError("HTTP Request node: No endpoint configured")
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        })
+      )
+    throw new NonRetriableError("HTTP Request node: No endpoint configured")
     }
   if (!data.variableName){
-        throw new NonRetriableError("Variablename not configured")
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        })
+      )
+      throw new NonRetriableError("Variablename not configured")
     }
   if (!data.method){
-        throw new NonRetriableError("method not configured")
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        })
+      )
+    throw new NonRetriableError("method not configured")
     }
+try{
   const result = await step.run("http-request", async () => {
     
     const endpoint = Handlebars.compile(data.endpoint)(context);
@@ -59,19 +86,27 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
         }
     }
   
-    if(data.variableName){
-        return {
-            ...context,
-            [data.variableName]: responsePayload
-        }
-    }
     return {
         ...context,
-        ...responsePayload
-    }
-
-})
-  return result
+        [data.variableName]: responsePayload
+       }
+  })
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "success"
+        })
+    );
+    return result
+}catch (error) {
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        })
+    );
+    throw error;
+}
 }
 
 
