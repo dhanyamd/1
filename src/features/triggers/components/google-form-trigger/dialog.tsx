@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { CopyIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { generateGoogleFormScript } from "./utils";
 
 interface Props {
     open: boolean;
@@ -65,11 +66,46 @@ open, onOpenChange
                     <Button
                     type="button"
                     variant="outline" 
-                    onClick={() => {}}
+                    onClick={async () => {
+                        const script = generateGoogleFormScript(webhookUrl);
+                        try{
+                          await navigator.clipboard.writeText(script);
+                          toast.success("Script copied to clipboard")
+                        }catch {
+                            toast.error("Failed to copy to clipboard")
+                        }
+                    }}
                     >
                     <CopyIcon className="size-4 mr-2"/>
                     Copy Google Apps Script
                     </Button>
+                    <p className="text-xs text-muted-foreground">
+                        This script includes your webhook URL and 
+                        handles form submission
+                    </p>
+                    </div>
+                    <div className="rounded-lg bg-muted p-4 space-y-2">
+                     <h4 className="font-medium text-sm">Available Variables</h4>
+                     <ul className="text-sm text-muted-foreground">
+                     <li>
+                        <code className="bg-background px-1 py-0.5 rounded">
+                            {"{{googleForm.respondentEmail}}"}
+                        </code>
+                        - Respondent's email 
+                     </li>
+                     <li>
+                        <code className="bg-background px-1 py-0.5 rounded">
+                          {"{{googleForm.responses['Question Name']}}"}
+                        </code>
+                        - Specific answer
+                     </li>
+                     <li>
+                        <code className="bg-background px-1 py-0.5 rounded">
+                          {"{{json googleForm.responses}}"}
+                        </code>{" "}
+                        - All responses as JSON
+                     </li>
+                     </ul>
                     </div>
                     </div>
                 </div>
