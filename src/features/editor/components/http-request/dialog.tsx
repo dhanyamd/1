@@ -16,13 +16,14 @@ const formSchema = z.object({
     .regex(/^[A-Za-z_$][A-Za-zz0-9_$]*$/, {
         message: "Variable name must start with a letter or underscore and conatine only letter, numbers and symbols  "
     }),
-    endpoint: z.string({ message: "Please enter a valid url" }),
+    endpoint: z.string().min(1,({ message: "Please enter a valid url" })),
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     body: z 
             .string()
             .optional()
 
 });
+
 export type HttpRequestFormValues = z.infer<typeof formSchema>
 interface Props {
     open: boolean;
