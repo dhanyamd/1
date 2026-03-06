@@ -25,6 +25,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   workflows     Workflow[]
+  credentials   Credential[]
 
   @@map("user")
 }
@@ -111,11 +112,17 @@ enum NodeType {
   OPENAI
 }
 
+enum CredentialType {
+  OPENAI 
+  ANTHROPIC 
+  GEMINI
+}
 model Node {
   id         String   @id @default(cuid())
   workflowId String
   workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-
+  credentialId String? 
+  credential Credential? @relation(fields: [credentialId], references: [id])
   name     String
   type     NodeType
   position Json
@@ -127,7 +134,17 @@ model Node {
   updatedAt DateTime @updatedAt
 
 }
-
+model Credential {
+  id String @id @default(cuid()) 
+  name String
+  value String
+  type CredentialType
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt
+  userId String 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Node Node[]
+}
 model Connection {
   id         String   @id @default(cuid())
   workflowId String

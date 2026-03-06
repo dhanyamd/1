@@ -6,6 +6,7 @@ import { workflowsRouter } from '@/features/workflows/server/route';
 import { PAGINATION } from '@/config/constants';
 import { NodeType } from '@/generated/prisma/client';
 import type { Node, Edge } from '@xyflow/react';
+import { credentialRouter } from '@/features/credentials/server/router';
 export const appRouter = createTRPCRouter({
   execute: protectedProcedure
       .input(z.object({id: z.string()})) 
@@ -23,6 +24,7 @@ export const appRouter = createTRPCRouter({
           return workflow;
         }),
   workflows: workflowsRouter,
+  credentials: credentialRouter,
   testAi: premiumProcedure.mutation(async () => {
     await inngest.send({
       name: "execute/ai"
