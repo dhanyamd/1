@@ -7,34 +7,35 @@ import { useNodeStatus } from "@/features/hooks/use-node-status";
 import { HTTP_REQUEST_CHANNEL_NAME, httpRequestChannel } from "@/inngest/channels/http-request";
 import { fetchHttpRequestRealtimeToken } from "@/features/actions";
 import { HttpRequestDialog, HttpRequestFormValues } from "@/features/editor/components/http-request/dialog";
-import { GeminiDialog, GeminiFormValues } from "./dialog";
 import { GEMINI_CHANNEL_NAME } from "@/inngest/channels/gemini";
-import { fetchGeminiRealtimeToken } from "./actions";
+import { OpenaiDialog, OpenaiFormValues } from "./dialog";
+import { fetchOpenaiRealtimeToken } from "./actions";
+import { OPENAI_CHANNEL_NAME } from "@/inngest/channels/openai";
 
-type GeminiNodeData = {
+type OpenainodeData = {
     variableName?: string;
     //model?: any;
     systemPrompt?: string;
     userPrompt?: string;
 };
 
-type GeminitNodeType = Node<GeminiNodeData>;
+type OpenaiNodeType = Node<OpenainodeData>;
 
-export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
+export const OpenaiNode = memo((props: NodeProps<OpenaiNodeType>) => {
     const [dialogOpen, setDialogOpen] = useState(false)
     const {setNodes} = useReactFlow()
     const NodeStatus = useNodeStatus({
         nodeId: props.id,
-        channel: GEMINI_CHANNEL_NAME,
+        channel: OPENAI_CHANNEL_NAME,
         topic: "status",
-        refreshToken: fetchGeminiRealtimeToken
+        refreshToken: fetchOpenaiRealtimeToken
     })
     const nodeData = props.data;
     const handleOpenSettings = () => setDialogOpen(true)
     const description = nodeData?.userPrompt
-        ? `gemini-1.5-flash: ${nodeData.userPrompt.slice(0,50)}...`
+        ? `gpt-4o-mini: ${nodeData.userPrompt.slice(0,50)}...`
         : "Not configured";
-    const handleSubmit = (values: GeminiFormValues) => {
+    const handleSubmit = (values: OpenaiFormValues) => {
             setNodes((nodes) => nodes.map((node) => {
               if (node.id === props.id) {
                 return {
@@ -50,7 +51,7 @@ export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
           };
     return (
         <>
-        <GeminiDialog 
+        <OpenaiDialog 
         open={dialogOpen} 
         onOpenChange={setDialogOpen}
         onSubmit={handleSubmit} 
@@ -60,8 +61,8 @@ export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
         {...props}
         id={props.id}
         status={NodeStatus}
-        icon="/gemini.svg"
-        name="Gemini"
+        icon="/openai.svg"
+        name="OpenAI"
         description={description}
         onSettings={handleOpenSettings}
         onDoubleClick={handleOpenSettings}
@@ -70,4 +71,4 @@ export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
     )
 });
 
-GeminiNode.displayName = "GeminiNode"
+OpenaiNode.displayName = "OpenaiNode"

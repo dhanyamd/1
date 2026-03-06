@@ -18,7 +18,6 @@ interface BaseExecutionNodeProps extends NodeProps {
     onSettings?: () => void; 
     onDoubleClick?: () => void;
 }
-const handleDelete = () => {}
 export const BaseExecutionNode = memo(
     ({
          id, name, status = "initial",  description, children, onSettings, onDoubleClick, icon,

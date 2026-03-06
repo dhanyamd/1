@@ -42,6 +42,18 @@ const executionNodes: NodeTypeOption[] = [
         label: "Gemini Request",
         description: "Makes a request to gemini",
         icon: "/gemini.svg"
+    },
+    {
+        type: NodeType.OPENAI,
+        label: "Openai Request",
+        description: "Makes a request to openai",
+        icon: "/openai.svg"
+    },
+    {
+        type: NodeType.ANTHROPIC,
+        label: "Anthropic Request",
+        description: "Makes a request to anthropic",
+        icon: "/anthropic.svg"
     }
 ]
 

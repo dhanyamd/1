@@ -7,34 +7,36 @@ import { useNodeStatus } from "@/features/hooks/use-node-status";
 import { HTTP_REQUEST_CHANNEL_NAME, httpRequestChannel } from "@/inngest/channels/http-request";
 import { fetchHttpRequestRealtimeToken } from "@/features/actions";
 import { HttpRequestDialog, HttpRequestFormValues } from "@/features/editor/components/http-request/dialog";
-import { GeminiDialog, GeminiFormValues } from "./dialog";
 import { GEMINI_CHANNEL_NAME } from "@/inngest/channels/gemini";
-import { fetchGeminiRealtimeToken } from "./actions";
+import { AnthropicDialog, AnthropicFormValues } from "./dialog";
+import { OPENAI_CHANNEL_NAME } from "@/inngest/channels/openai";
+import { ANTHROPIC_CHANNEL_NAME } from "@/inngest/channels/anthropic";
+import { fetchAnthropicRealtimeToken } from "./actions";
 
-type GeminiNodeData = {
+type AnthropicnodeData = {
     variableName?: string;
     //model?: any;
     systemPrompt?: string;
     userPrompt?: string;
 };
 
-type GeminitNodeType = Node<GeminiNodeData>;
+type AnthropicNodeType = Node<AnthropicnodeData>;
 
-export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
+export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
     const [dialogOpen, setDialogOpen] = useState(false)
     const {setNodes} = useReactFlow()
     const NodeStatus = useNodeStatus({
         nodeId: props.id,
-        channel: GEMINI_CHANNEL_NAME,
+        channel: ANTHROPIC_CHANNEL_NAME,
         topic: "status",
-        refreshToken: fetchGeminiRealtimeToken
+        refreshToken: fetchAnthropicRealtimeToken
     })
     const nodeData = props.data;
     const handleOpenSettings = () => setDialogOpen(true)
     const description = nodeData?.userPrompt
-        ? `gemini-1.5-flash: ${nodeData.userPrompt.slice(0,50)}...`
+        ? `claude-sonnet-4-0: ${nodeData.userPrompt.slice(0,50)}...`
         : "Not configured";
-    const handleSubmit = (values: GeminiFormValues) => {
+    const handleSubmit = (values: AnthropicFormValues) => {
             setNodes((nodes) => nodes.map((node) => {
               if (node.id === props.id) {
                 return {
@@ -50,7 +52,7 @@ export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
           };
     return (
         <>
-        <GeminiDialog 
+        <AnthropicDialog 
         open={dialogOpen} 
         onOpenChange={setDialogOpen}
         onSubmit={handleSubmit} 
@@ -60,8 +62,8 @@ export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
         {...props}
         id={props.id}
         status={NodeStatus}
-        icon="/gemini.svg"
-        name="Gemini"
+        icon="/anthropic.svg"
+        name="Anthropic"
         description={description}
         onSettings={handleOpenSettings}
         onDoubleClick={handleOpenSettings}
@@ -70,4 +72,4 @@ export const GeminiNode = memo((props: NodeProps<GeminitNodeType>) => {
     )
 });
 
-GeminiNode.displayName = "GeminiNode"
+AnthropicNode.displayName = "AnthropicNode"

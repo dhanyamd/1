@@ -4,6 +4,8 @@ import { manualTriggerExecutor } from "@/components/manual-trigger/executor";
 import { httpRequestExecutor } from "../editor/components/http-request/executor";
 import { googleFormTriggerExecutor } from "../triggers/components/google-form-trigger/executor";
 import { GeminiExecutor } from "../triggers/components/gemini/executor";
+import { OpenaiExecutor } from "../triggers/components/openai/executor";
+import { AnthropicExecutor } from "../triggers/components/anthropic/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
@@ -11,8 +13,8 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.HTTP_REQUEST]: httpRequestExecutor,
     [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
     [NodeType.GEMINI]: GeminiExecutor,
-    [NodeType.ANTHROPIC]: GeminiExecutor,
-    [NodeType.OPENAI]: GeminiExecutor
+    [NodeType.ANTHROPIC]: AnthropicExecutor,
+    [NodeType.OPENAI]: OpenaiExecutor
     
 }
 

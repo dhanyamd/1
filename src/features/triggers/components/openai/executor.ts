@@ -1,9 +1,10 @@
 import { NodeExecutor } from "@/features/lib/types";
 import Handlebars from 'handlebars'
-import {createGoogleGenerativeAI} from "@ai-sdk/google"
+import {createOpenAI} from "@ai-sdk/openai"
 import {  GeminiChannel } from "@/inngest/channels/gemini";
 import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
+import { OpenaiChannel } from "@/inngest/channels/openai";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -12,7 +13,7 @@ Handlebars.registerHelper("json", (context) => {
 
 })
 
-type GeminiData = {
+type OpenaiData = {
     variableName?: string;
     model?: string;
     systemPrompt?: string;
@@ -20,7 +21,7 @@ type GeminiData = {
 }
 
 
-export const GeminiExecutor: NodeExecutor<GeminiData> = async({
+export const OpenaiExecutor: NodeExecutor<OpenaiData> = async({
     data,
     nodeId,
     context,
@@ -28,35 +29,35 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async({
     publish
 }) => {
   await publish(
-        GeminiChannel().status({
+        OpenaiChannel().status({
         nodeId,
         status: "loading"
     })
   )
   if(!data.variableName) {
     await publish(
-        GeminiChannel().status({
+        OpenaiChannel().status({
             nodeId,
             status: "error"
         })
     );
-    throw new NonRetriableError("Gemini node: Variablename is missing")
+    throw new NonRetriableError("Openai node: Variablename is missing")
   }
   const systemPrompt = data.systemPrompt 
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant"
   const userPrompt = Handlebars.compile(data.userPrompt)(context)
-  const credentialValue = process.env.GOOGLE_GENERATIVE_AI;
-  const google = createGoogleGenerativeAI({
+  const credentialValue = process.env.OPENAI_API_KEY;
+  const openai = createOpenAI({
     apiKey: credentialValue
   })
  
   try{
     const { steps } =  await step.ai.wrap(
-        "gemini-generate-text",
+        "openai-generate-text",
         generateText,
         {
-            model: google( data.model||"gemini-2.0-flash"),
+            model: openai("gpt-4o-mini"),
             system: systemPrompt,
             prompt: userPrompt,
             experimental_telemetry: {
@@ -69,7 +70,7 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async({
     const text = steps[0].content[0].type === "text"
                     ? steps[0].content[0].text : "";
     await publish(
-        GeminiChannel().status({
+        OpenaiChannel().status({
             nodeId,
             status: "success"
         })
@@ -82,7 +83,7 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async({
     }
   }catch(error) {
     await publish(
-        GeminiChannel().status({
+        OpenaiChannel().status({
             nodeId,
             status: "error"
         })
