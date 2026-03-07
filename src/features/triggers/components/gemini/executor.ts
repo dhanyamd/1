@@ -4,6 +4,7 @@ import {createGoogleGenerativeAI} from "@ai-sdk/google"
 import {  GeminiChannel } from "@/inngest/channels/gemini";
 import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
+import prisma from "@/lib/db";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -14,7 +15,8 @@ Handlebars.registerHelper("json", (context) => {
 
 type GeminiData = {
     variableName?: string;
-    model?: string;
+    credentialId?: string;
+    //model?: string;
     systemPrompt?: string;
     userPrompt?: string;
 }
@@ -42,13 +44,31 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async({
     );
     throw new NonRetriableError("Gemini node: Variablename is missing")
   }
+  if(!data.credentialId) {
+    await publish(
+        GeminiChannel().status({
+            nodeId,
+            status: "error"
+        })
+    );
+    throw new NonRetriableError("Gemini node: CredentialId is missing")
+  }
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+        where: {
+            id: data.credentialId
+        }
+    })
+  })
+  if (!credential) {
+    throw new NonRetriableError("Gemini node: Credential not found")
+  }
   const systemPrompt = data.systemPrompt 
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant"
   const userPrompt = Handlebars.compile(data.userPrompt)(context)
-  const credentialValue = process.env.GOOGLE_GENERATIVE_AI;
   const google = createGoogleGenerativeAI({
-    apiKey: credentialValue
+    apiKey: credential.value
   })
  
   try{
@@ -56,7 +76,7 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async({
         "gemini-generate-text",
         generateText,
         {
-            model: google( data.model||"gemini-2.0-flash"),
+            model: google("gemini-2.0-flash"),
             system: systemPrompt,
             prompt: userPrompt,
             experimental_telemetry: {

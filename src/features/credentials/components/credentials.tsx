@@ -1,7 +1,7 @@
 'use client'
 import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
 import { useRouter } from "next/navigation";
-import { Workflow } from "@/generated/prisma/client";
+import { Credential, CredentialType } from "@/generated/prisma/client";
 import { WorkflowIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useCredentialParams } from "../hooks/use-credentials-params";
@@ -9,6 +9,7 @@ import { useEntitySearch } from "@/features/workflows/hooks/use-entity-search";
 import { useUpgradeModal } from "@/features/workflows/hooks/use-upgrade-modal";
 import { useRemoveCredential, useSuspenseCredentials } from "../hooks/use-credentials";
 import { useCreateWorkflow } from "@/features/workflows/hooks/use-workflows";
+import Image from "next/image";
 
 export const CredentialsSearch = () => {
     const [params, setParams] = useCredentialParams();
@@ -25,13 +26,13 @@ export const CredentialsSearch = () => {
 }
 
 export const CredentialsPagination  = () => {
-    const workflows  = useSuspenseCredentials();
+    const credentials  = useSuspenseCredentials();
     const [params, setParams] = useCredentialParams();
     return (
         <EntityPagination 
-        disabled={workflows.isFetching}
-        totalPages={workflows.data.totalPages} 
-        page={workflows.data.page} 
+        disabled={credentials.isFetching}
+        totalPages={credentials.data.totalPages} 
+        page={credentials.data.page} 
         onPageChange={(page) => setParams({...params, page})}
 
         />
@@ -105,14 +106,18 @@ export const CredentialsEmpty = () => {
     
     )
 }
-
+const credentialLogos: Record<CredentialType, string> = {
+    [CredentialType.OPENAI]: "/openai.svg",
+    [CredentialType.ANTHROPIC]: "/anthropic.svg",
+    [CredentialType.GEMINI]: "/gemini.svg",
+  }
 export const CredentialItem = ({
 data,
 }: {
-    data: Workflow
+    data: Credential
 }) => {
     const removeCredential = useRemoveCredential();
-
+    const logo = credentialLogos[data.type] || "/openai.svg"
     const handleRemove = () => {
         removeCredential.mutate({ id: data.id });
     };
@@ -130,7 +135,7 @@ data,
         }
         image={
             <div className="size-8 flex items-center justify-center">
-                <WorkflowIcon className="size-5 text-muted-foreground" />
+                <Image src={logo} alt={data.type} width={20} height={20} />
             </div>
         }
         onRemove={handleRemove}

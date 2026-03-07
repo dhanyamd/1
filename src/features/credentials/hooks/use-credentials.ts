@@ -17,7 +17,7 @@ export const useCreateCredential = () => {
 
 
     return useMutation(
-        trpc.workflows.create.mutationOptions({
+        trpc.credentials.create.mutationOptions({
             onSuccess: (data) => {
                 toast.success(`Credential ${data.name} created`);
                 queryClient.invalidateQueries(
@@ -38,7 +38,7 @@ export const useRemoveCredential= () => {
     const queryClient = useQueryClient();
 
     return useMutation(
-        trpc.deleteWorkflow.mutationOptions({
+        trpc.credentials.remove.mutationOptions({
             onSuccess: (data) => {
                 toast.success(`Credential ${data.name} removed`);
                 queryClient.invalidateQueries(
@@ -63,7 +63,7 @@ export const useUpdateCredential = () => {
 
 
     return useMutation(
-        trpc.updateWorkflow.mutationOptions({
+        trpc.credentials.update.mutationOptions({
             onSuccess: (data) => {
                 toast.success(`Credential ${data.name} saved`);
                 queryClient.invalidateQueries(
@@ -74,7 +74,7 @@ export const useUpdateCredential = () => {
                 )
             },
             onError: (error) => {
-                toast.error(`Failed to update workflow: ${error.message}`)
+                toast.error(`Failed to update credential: ${error.message}`)
             }
         }
             
