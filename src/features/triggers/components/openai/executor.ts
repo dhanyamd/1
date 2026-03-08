@@ -5,6 +5,7 @@ import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
 import { OpenaiChannel } from "@/inngest/channels/openai";
 import prisma from "@/lib/db";
+import { decrypt } from "@/lib/encryption";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -69,7 +70,7 @@ export const OpenaiExecutor: NodeExecutor<OpenaiData> = async({
   if (!credential) {
     throw new NonRetriableError("Gemini node: Credential not found")
   }  const openai = createOpenAI({
-    apiKey: credential.value
+    apiKey: decrypt(credential.value)
   })
  
   try{

@@ -1,12 +1,11 @@
 import { NodeExecutor } from "@/features/lib/types";
 import Handlebars from 'handlebars'
 import {createAnthropic} from "@ai-sdk/anthropic"
-import {  GeminiChannel } from "@/inngest/channels/gemini";
 import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
-import { OpenaiChannel } from "@/inngest/channels/openai";
 import { AnthropicChannel } from "@/inngest/channels/anthropic";
 import prisma from "@/lib/db";
+import { decrypt } from "@/lib/encryption";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -72,7 +71,7 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async({
     : "You are a helpful assistant"
   const userPrompt = Handlebars.compile(data.userPrompt)(context)
   const anthropic = createAnthropic({
-    apiKey: credential.value
+    apiKey: decrypt(credential.value)
   })
  
   try{
