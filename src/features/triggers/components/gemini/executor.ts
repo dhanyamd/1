@@ -27,6 +27,7 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async({
     nodeId,
     context,
     step,
+    userId,
     publish
 }) => {
   await publish(
@@ -53,20 +54,22 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async({
     );
     throw new NonRetriableError("Gemini node: CredentialId is missing")
   }
+ 
+  const systemPrompt = data.systemPrompt 
+    ? Handlebars.compile(data.systemPrompt)(context)
+    : "You are a helpful assistant"
+  const userPrompt = Handlebars.compile(data.userPrompt)(context)
   const credential = await step.run("get-credential", () => {
     return prisma.credential.findUnique({
         where: {
-            id: data.credentialId
+            id: data.credentialId,
+            userId
         }
     })
   })
   if (!credential) {
     throw new NonRetriableError("Gemini node: Credential not found")
   }
-  const systemPrompt = data.systemPrompt 
-    ? Handlebars.compile(data.systemPrompt)(context)
-    : "You are a helpful assistant"
-  const userPrompt = Handlebars.compile(data.userPrompt)(context)
   const google = createGoogleGenerativeAI({
     apiKey: credential.value
   })

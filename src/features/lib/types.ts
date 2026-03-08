@@ -9,6 +9,7 @@ export interface NodeexecutorParana<TData = Record<string, unknown>> {
     nodeId: string;
     context: WorkflowContext;
     step: StepTools;
+    userId: string;
     publish: Realtime.PublishFn;
 }
 

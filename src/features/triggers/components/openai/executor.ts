@@ -1,7 +1,6 @@
 import { NodeExecutor } from "@/features/lib/types";
 import Handlebars from 'handlebars'
 import {createOpenAI} from "@ai-sdk/openai"
-import {  GeminiChannel } from "@/inngest/channels/gemini";
 import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
 import { OpenaiChannel } from "@/inngest/channels/openai";
@@ -28,6 +27,7 @@ export const OpenaiExecutor: NodeExecutor<OpenaiData> = async({
     nodeId,
     context,
     step,
+    userId,
     publish
 }) => {
   await publish(
@@ -61,7 +61,8 @@ export const OpenaiExecutor: NodeExecutor<OpenaiData> = async({
   const credential = await step.run("get-credential", () => {
     return prisma.credential.findUnique({
         where: {
-            id: data.credentialId
+            id: data.credentialId,
+            userId
         }
     })
   })
