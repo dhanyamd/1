@@ -54,6 +54,12 @@ const executionNodes: NodeTypeOption[] = [
         label: "Anthropic Request",
         description: "Makes a request to anthropic",
         icon: "/anthropic.svg"
+    },
+    {
+        type: NodeType.DISCORD,
+        label: "Discord Request",
+        description: "Makes a request to discord",
+        icon: "/dsicord.svg"
     }
 ]
 

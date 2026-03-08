@@ -1,10 +1,10 @@
 import { NodeExecutor } from "@/features/lib/types";
 import Handlebars from 'handlebars'
 import {createGoogleGenerativeAI} from "@ai-sdk/google"
-import {  GeminiChannel } from "@/inngest/channels/gemini";
 import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
+import { GeminiChannel } from "@/inngest/channels/gemini";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
