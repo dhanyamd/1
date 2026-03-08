@@ -6,6 +6,7 @@ import { DiscordNode } from "@/features/triggers/components/discord/node";
 import { GeminiNode } from "@/features/triggers/components/gemini/node";
 import { GoogleFormTrigger } from "@/features/triggers/components/google-form-trigger/node";
 import { OpenaiNode } from "@/features/triggers/components/openai/node";
+import { SlackNode } from "@/features/triggers/components/slack/node";
 import { NodeType } from "@/generated/prisma/enums";
 import type { NodeTypes } from "@xyflow/react";
 
@@ -17,7 +18,8 @@ export const nodeComponents = {
     [NodeType.GEMINI]: GeminiNode,
     [NodeType.OPENAI]: OpenaiNode,
     [NodeType.ANTHROPIC]: AnthropicNode,
-    [NodeType.DISCORD]: DiscordNode
+    [NodeType.DISCORD]: DiscordNode,
+    [NodeType.SLACK]: SlackNode
 } as const satisfies NodeTypes;
 
 

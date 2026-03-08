@@ -59,7 +59,13 @@ const executionNodes: NodeTypeOption[] = [
         type: NodeType.DISCORD,
         label: "Discord Request",
         description: "Makes a request to discord",
-        icon: "/dsicord.svg"
+        icon: "/discord.svg"
+    },
+    {
+        type: NodeType.SLACK,
+        label: "Slack Request",
+        description: "Makes a request to slack",
+        icon: "/slack.svg"
     }
 ]
 

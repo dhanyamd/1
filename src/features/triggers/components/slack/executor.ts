@@ -4,7 +4,7 @@ import {createGoogleGenerativeAI} from "@ai-sdk/google"
 import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
-import { DiscordChannel } from "@/inngest/channels/discord";
+import { SlackChannel } from "@/inngest/channels/slack";
 import { decode } from "punycode";
 import ky from "ky";
 
@@ -15,15 +15,14 @@ Handlebars.registerHelper("json", (context) => {
 
 })
 
-type DiscordData = {
+type SlackData = {
     variableName?: string;
     webhookUrl? : string;
     content?: string;
-    username?: string;
 }
 
 
-export const DiscordExecutor: NodeExecutor<DiscordData> = async({
+export const SlackExecutor: NodeExecutor<SlackData> = async({
     data,
     nodeId,
     context,
@@ -31,48 +30,45 @@ export const DiscordExecutor: NodeExecutor<DiscordData> = async({
     publish
 }) => {
   await publish(
-        DiscordChannel().status({
+        SlackChannel().status({
         nodeId,
         status: "loading"
     })
   )
   if(!data.content){
     await publish(
-      DiscordChannel().status({
+      SlackChannel().status({
         nodeId,
         status: "error"
       })
     )
   }
-  const rawContent = Handlebars.compile(data.content)(context)
+  const rawContent = Handlebars.compile(data)(context);
   const content = decode(rawContent)
-  const username = data.username 
-        ? decode(Handlebars.compile(data.username)(context))
-        : undefined
-  const result = await step.run("discord-webhook", async () => {
-    await ky.post(data.webhookUrl!, {
-      json: {
-        content: content.slice(0, 2000),
-        username
-      }
-    })
+  const result = await step.run("slack-webhook", async () => {
     if(!data.webhookUrl) {
       await publish(
-          DiscordChannel().status({
+          SlackChannel().status({
               nodeId,
               status: "error"
           })
       );
-      throw new NonRetriableError("Discord node: webhook url is missing")
+      throw new NonRetriableError("Slack node: webhook url is missing")
     }
+    await ky.post(data.webhookUrl!, {
+      json: {
+        content: content
+      }
+    })
+    
     if(!data.variableName) {
       await publish(
-          DiscordChannel().status({
+          SlackChannel().status({
               nodeId,
               status: "error"
           })
       );
-      throw new NonRetriableError("Discord node: Variablename is missing")
+      throw new NonRetriableError("Slack node: Variablename is missing")
     }
     return {
       ...context,
@@ -84,7 +80,7 @@ export const DiscordExecutor: NodeExecutor<DiscordData> = async({
   try{
   
     await publish(
-        DiscordChannel().status({
+        SlackChannel().status({
             nodeId,
             status: "success"
         })
@@ -92,7 +88,7 @@ export const DiscordExecutor: NodeExecutor<DiscordData> = async({
     return result;
   }catch(error) {
     await publish(
-        DiscordChannel().status({
+        SlackChannel().status({
             nodeId,
             status: "error"
         })
