@@ -1,4 +1,4 @@
-import { NodeType } from "@/generated/prisma/enums";
+import { NodeType } from "@/generated/prisma";
 import { NodeExecutor, NodeexecutorParana, WorkflowContext } from "./types";
 import { manualTriggerExecutor } from "@/components/manual-trigger/executor";
 import { httpRequestExecutor } from "../editor/components/http-request/executor";
@@ -19,12 +19,12 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.OPENAI]: OpenaiExecutor,
     [NodeType.DISCORD]: DiscordExecutor,
     [NodeType.SLACK]: SlackExecutor,
-    
+
 }
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
     const executor = executorRegistry[type];
-    if (!executor){
+    if (!executor) {
         throw new Error(`No executor found for node type: ${type}`);
     }
     return executor;

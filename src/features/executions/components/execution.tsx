@@ -1,4 +1,5 @@
-import { ExecutionStatus } from "@/generated/prisma/enums";
+'use client'
+import { ExecutionStatus } from "@/generated/prisma";
 import { CheckCircle2Icon, XCircleIcon, Loader2Icon, ClockIcon, Form } from "lucide-react";
 import { useSuspenseExecution } from "../hooks/use-execution";
 import { useState } from "react";
@@ -12,7 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 
 const formatStatus = (status: ExecutionStatus) => {
   return status.charAt(0) + status.slice(1).toLowerCase()
-} 
+}
 const getStatusIcon = (status: ExecutionStatus) => {
   switch (status) {
     case ExecutionStatus.SUCCESS:
@@ -32,9 +33,9 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
 
   const duration = execution.completedAt
     ? Math.round(
-        (new Date(execution.completedAt).getTime() - 
-         new Date(execution.startedAt).getTime()) / 1000
-      )
+      (new Date(execution.completedAt).getTime() -
+        new Date(execution.startedAt).getTime()) / 1000
+    )
     : null;
 
   return (
@@ -77,56 +78,56 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
             </p>
           </div>
           {execution.completedAt ? (
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Completed</p>
-            <p className="text-sm">
-              {formatDistanceToNow(new Date(execution.completedAt), { addSuffix: true })}
-            </p>          </div>
-        ) : null}
-        {duration !== null ? (
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Duration</p>
-            <p className="text-sm">
-              {duration}s
-            </p>          </div>
-        ) : null}
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Completed</p>
+              <p className="text-sm">
+                {formatDistanceToNow(new Date(execution.completedAt), { addSuffix: true })}
+              </p>          </div>
+          ) : null}
+          {duration !== null ? (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Duration</p>
+              <p className="text-sm">
+                {duration}s
+              </p>          </div>
+          ) : null}
           <div>
             <p className="text-sm font-medium text-muted-foreground">EventID</p>
             <p className="text-sm">
               {execution.inngestEventId}
             </p>          </div>
-            </div>
-            {execution.error && (
+        </div>
+        {execution.error && (
           <div className="bg-red-50 p-4 rounded-md border border-red-200">
             <div>
-            <p className="text-sm font-medium text-red-900 mb-2">Error</p>
-            <p className="text-sm text-red-800 font-mono">{execution.error}</p>
-          
-           </div>
+              <p className="text-sm font-medium text-red-900 mb-2">Error</p>
+              <p className="text-sm text-red-800 font-mono">{execution.error}</p>
+
+            </div>
             {execution.errorStack && (
               <Collapsible
-              open={showStackTrace}
-              onOpenChange={setShowStackTrace}
-            >
-              <CollapsibleTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-red-900 hover:bg-red-100"
-                >
-                  {showStackTrace ? "Hide stack trace" : "Show stack trace"}
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                 <pre className="text-xs text-red-700 bg-red-50 p-4 rounded-md overflow-x-auto font-mono mt-2">
-                  {execution.errorStack}
-                </pre>
-              </CollapsibleContent>
-            </Collapsible>
+                open={showStackTrace}
+                onOpenChange={setShowStackTrace}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-900 hover:bg-red-100"
+                  >
+                    {showStackTrace ? "Hide stack trace" : "Show stack trace"}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <pre className="text-xs text-red-700 bg-red-50 p-4 rounded-md overflow-x-auto font-mono mt-2">
+                    {execution.errorStack}
+                  </pre>
+                </CollapsibleContent>
+              </Collapsible>
             )}
-      </div>
+          </div>
         )}
-         {execution.output && (
+        {execution.output && (
           <div className="mt-6 p-4 bg-muted rounded-md">
             <p className="text-sm font-medium mb-2">Output</p>
             <pre className="text-xs font-mono overflow-auto max-h-[500px]">

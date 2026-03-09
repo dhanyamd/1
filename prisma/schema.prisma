@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
@@ -175,7 +175,7 @@ enum ExecutionStatus {
 model Execution {
   id  String @id @default(cuid()) 
   startedAt DateTime @default(now()) 
-  completedAt DateTime 
+  completedAt DateTime? 
   status ExecutionStatus @default(RUNNING)
   error String? @db.Text
   errorStack String? @db.Text

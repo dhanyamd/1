@@ -8,7 +8,7 @@ import {
   adjectives,
   animals,
 } from "unique-names-generator";
-import { NodeType } from "@/generated/prisma/client";
+import { NodeType } from "@/generated/prisma";
 
 export const workflowsRouter = createTRPCRouter({
   create: premiumProcedure.mutation(({ ctx }) => {

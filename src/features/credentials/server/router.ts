@@ -9,23 +9,23 @@ import {
   adjectives,
   animals,
 } from "unique-names-generator";
-import { CredentialType, NodeType } from "@/generated/prisma/client";
+import { CredentialType, NodeType } from "@/generated/prisma";
 import z from "zod";
 import { PAGINATION } from "@/config/constants";
 import { encrypt } from "@/lib/encryption";
 
 export const credentialRouter = createTRPCRouter({
   create: premiumProcedure
-  .input(
-    z.object({
+    .input(
+      z.object({
         name: z.string().min(1, "Name is required"),
         type: z.enum(CredentialType),
         value: z.string().min(1, "Value is required")
-    })
-  )
-  .mutation(({ ctx, input }) => {
-    const {name,value, type} = input;
-  
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      const { name, value, type } = input;
+
       return prisma.credential.create({
         data: {
           name: name,
@@ -35,32 +35,32 @@ export const credentialRouter = createTRPCRouter({
         },
       });
     }),
-    remove: protectedProcedure
+  remove: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {      
+    .mutation(async ({ ctx, input }) => {
 
       return prisma.credential.delete({
         where: { id: input.id, userId: ctx.user.id }
       });
     }),
-    update: protectedProcedure
+  update: protectedProcedure
     .input(z.object({
-        id: z.string(),
-        name: z.string().min(1, "Name is required"),
-        type: z.enum(CredentialType),
-        value: z.string().min(1, "Value is required")
-        }))
-    .mutation(async({ctx, input}) => {
-        const {id, name, type, value} = input;
-        const credential = await prisma.credential.findUniqueOrThrow({
-            where: {id, userId: ctx.user.id}
-        })
+      id: z.string(),
+      name: z.string().min(1, "Name is required"),
+      type: z.nativeEnum(CredentialType),
+      value: z.string().min(1, "Value is required")
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { id, name, type, value } = input;
+      const credential = await prisma.credential.findUniqueOrThrow({
+        where: { id, userId: ctx.user.id }
+      })
       return prisma.credential.update({
-        where: {id : ctx.user.id},
-        data : {name, type, value: encrypt(value)}
+        where: { id: ctx.user.id },
+        data: { name, type, value: encrypt(value) }
       })
     }),
-    getOne: protectedProcedure
+  getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return prisma.credential.findFirst({
@@ -68,10 +68,10 @@ export const credentialRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.user.id, // Ensure user owns the workflow
         },
-        
+
       });
     }),
-    getMany: protectedProcedure
+  getMany: protectedProcedure
     .input(
       z.object({
         page: z.number().default(PAGINATION.DEFAULT_PAGE),
@@ -116,19 +116,19 @@ export const credentialRouter = createTRPCRouter({
       const hasPreviousPage = page > 1;
       return { items: items, page, pageSize, totalCount, totalPages, hasNextPage, hasPreviousPage };
     }),
-    getBytype: protectedProcedure 
-                .input(
-                    z.object({
-                        type: z.enum(CredentialType)
-                    })
-                )
-                .query( ({input, ctx}) => {
-                    const {type} = input;
-                    return prisma.credential.findMany({
-                        where: {type, userId: ctx.user.id}, 
-                        orderBy: {
-                            updatedAt: "desc"
-                        }
-                    })
-                })
-  })
+  getBytype: protectedProcedure
+    .input(
+      z.object({
+        type: z.nativeEnum(CredentialType)
+      })
+    )
+    .query(({ input, ctx }) => {
+      const { type } = input;
+      return prisma.credential.findMany({
+        where: { type, userId: ctx.user.id },
+        orderBy: {
+          updatedAt: "desc"
+        }
+      })
+    })
+})
