@@ -55,8 +55,10 @@ export const executeWorkflow = inngest.createFunction(
       throw new NonRetriableError("WorkflowID is missing")
     }
     await step.run("create-execution", async () => {
-      return prisma.execution.create({
-        data: {
+      return prisma.execution.upsert({
+        where: { inngestEventId },
+        update: {},
+        create: {
           workflow: {
             connect: { id: workflowId }
           },
