@@ -14,6 +14,10 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }
   },
+  trustedOrigins: [
+    "https://mimiiii.xyz",
+    "https://www.mimiiii.xyz"
+  ],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
