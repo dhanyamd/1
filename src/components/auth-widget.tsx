@@ -34,10 +34,10 @@ export function AuthWidget() {
 
   const handleEmailContinue = async () => {
     if (!email) return;
-    
+
     setSubmitting(true);
     try {
-      const baseURL = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000";
+      const baseURL = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "";
       const response = await fetch(`${baseURL}/api/auth/send-magic-link`, {
         method: "POST",
         headers: {
@@ -172,7 +172,7 @@ export function AuthWidget() {
           </Button>
         </div>
         */}
-        
+
 
         {/* Footer */}
         <div className="text-xs text-gray-400 text-center mt-4">

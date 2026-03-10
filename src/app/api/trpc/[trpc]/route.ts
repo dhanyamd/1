@@ -9,9 +9,10 @@ const handler = (request: Request) =>
     router: appRouter,
     createContext: ({ req }) => createTRPCContext({ req, res: new Response() }),
     responseMeta() {
+      const origin = request.headers.get('origin');
       return {
         headers: {
-          'Access-Control-Allow-Origin': 'http://localhost:3000',
+          ...(origin ? { 'Access-Control-Allow-Origin': origin } : {}),
           'Access-Control-Allow-Credentials': 'true',
           'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',

@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth";
-import {prismaAdapter} from "better-auth/adapters/prisma"
+import { prismaAdapter } from "better-auth/adapters/prisma"
 import prisma from "@/lib/db"
 import { polarClient } from "./polar";
 
@@ -32,22 +32,22 @@ export const auth = betterAuth({
   },
   plugins: [
     polar({
-        client: polarClient,
-        createCustomerOnSignUp: true,
-        use: [
-            checkout({
-                products: [
-                    {
-                        productId: "726a0a7c-4e40-4a38-9fe5-9dda6464ae2f",
-                        slug: "MIRA" // Custom slug for easy reference in Checkout URL, e.g. /checkout/MIRA
-                    }
-                ],
-                successUrl: process.env.POLAR_SUCCESS_URL,
-                authenticatedUsersOnly: true
-            }),
-            portal()
-        ],
+      client: polarClient,
+      createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: [
+            {
+              productId: "726a0a7c-4e40-4a38-9fe5-9dda6464ae2f",
+              slug: "MIRA" // Custom slug for easy reference in Checkout URL, e.g. /checkout/MIRA
+            }
+          ],
+          successUrl: process.env.POLAR_SUCCESS_URL,
+          authenticatedUsersOnly: true
+        }),
+        portal()
+      ],
     })
-],
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000"
+  ],
+  baseURL: process.env.BETTER_AUTH_URL
 });
