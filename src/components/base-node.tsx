@@ -4,47 +4,47 @@ import { cn } from "@/lib/utils";
 import { NodeStatus } from "./node-status-indicator";
 import { CheckCircleIcon, Loader2Icon, XCircleIcon } from "lucide-react";
 
-interface BaseNodeProps extends 
-HTMLAttributes<HTMLDivElement> {
-  status? : NodeStatus;
+interface BaseNodeProps extends
+  HTMLAttributes<HTMLDivElement> {
+  status?: NodeStatus;
 }
 
 export const BaseNode = forwardRef<HTMLDivElement, BaseNodeProps>(({
-  className, status,  ...props 
+  className, status, ...props
 }, ref) => (
 
-    <div
-      ref={ref}
-      className={cn(
-        "bg-card text-card-foreground relative rounded-sm border border-muted-foreground hover:bg-accent",
-        "hover:ring-1",
-        // React Flow displays node elements inside of a `NodeWrapper` component,
-        // which compiles down to a div with the class `react-flow__node`.
-        // When a node is selected, the class `selected` is added to the
-        // `react-flow__node` element. This allows us to style the node when it
-        // is selected, using Tailwind's `&` selector.
-        "[.react-flow\\_\\_node.selected_&]:border-muted-foreground",
-        "[.react-flow\\_\\_node.selected_&]:shadow-lg",
-        className,
-      )}
-      tabIndex={0}
-      {...props}
-    >
-      {props.children} 
-      {status === "error" && (
-        <XCircleIcon className="absolute right-0.5 bottom-0.5 size-2 
+  <div
+    ref={ref}
+    className={cn(
+      "bg-card text-card-foreground relative rounded-sm border border-muted-foreground hover:bg-accent",
+      "hover:ring-1",
+      // React Flow displays node elements inside of a `NodeWrapper` component,
+      // which compiles down to a div with the class `react-flow__node`.
+      // When a node is selected, the class `selected` is added to the
+      // `react-flow__node` element. This allows us to style the node when it
+      // is selected, using Tailwind's `&` selector.
+      "[.react-flow\\_\\_node.selected_&]:border-muted-foreground",
+      "[.react-flow\\_\\_node.selected_&]:shadow-lg",
+      className,
+    )}
+    tabIndex={0}
+    {...props}
+  >
+    {props.children}
+    {status === "error" && (
+      <XCircleIcon className="absolute right-1 bottom-1 size-4 
         text-red-700 stroke-3 "/>
-      )}
-      {status === "success" && (
-        <CheckCircleIcon className="absolute right-0.5 bottom-0.5 size-2 
+    )}
+    {status === "success" && (
+      <CheckCircleIcon className="absolute right-1 bottom-1 size-4 
         text-green-700 stroke-3 "/>
-      )}
-      {status === "loading" && (
-        <Loader2Icon className="absolute -right-0.5 -bottom-0.5 size-2 
-        text-blue-700 stroke-3 animate-spin"/>
-      )}
-      </div>
-  )
+    )}
+    {status === "loading" && (
+      <Loader2Icon className="absolute -right-2 -bottom-2 size-5 
+        text-blue-700 stroke-3 animate-spin bg-background rounded-full"/>
+    )}
+  </div>
+)
 )
 
 

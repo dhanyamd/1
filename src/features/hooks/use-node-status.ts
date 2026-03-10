@@ -21,6 +21,14 @@ export function useNodeStatus({
         enabled: true
     });
     useEffect(() => {
+        if (data.length > 0) {
+            console.log("REALTIME DATA RECEIVED", {
+                nodeId,
+                channel,
+                topic,
+                count: data.length,
+            });
+        }
         if (!data.length) {
             return;
         }

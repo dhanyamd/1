@@ -31,6 +31,7 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
   userId,
   publish
 }) => {
+  console.log("PUBLISHING STATUS", { nodeId, status: "loading" });
   await publish(
     GeminiChannel().status({
       nodeId,
