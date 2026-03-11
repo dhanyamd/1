@@ -5,8 +5,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true
   },
-  
-  /* config options here */
+  transpilePackages: ["nuqs"],
 };
 
 export default withSentryConfig(nextConfig, {
