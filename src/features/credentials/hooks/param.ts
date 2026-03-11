@@ -1,5 +1,5 @@
 import { PAGINATION } from '@/config/constants'
-import { parseAsInteger, parseAsString } from 'nuqs'
+import { parseAsInteger, parseAsString } from 'nuqs/server'
 export const credentialsParams = {
       page: parseAsInteger
             .withDefault(PAGINATION.DEFAULT_PAGE)
