@@ -32,16 +32,16 @@ export const BaseNode = forwardRef<HTMLDivElement, BaseNodeProps>(({
   >
     {props.children}
     {status === "error" && (
-      <XCircleIcon className="absolute right-0.5 bottom-0.5 size-3 
-        text-red-700 stroke-3 bg-background rounded-full"/>
+      <XCircleIcon className="absolute -right-1 -bottom-1 size-2.5 
+        text-red-600 stroke-[2.5] bg-background rounded-full shadow-sm"/>
     )}
     {status === "success" && (
-      <CheckCircleIcon className="absolute right-0.5 bottom-0.5 size-3 
-        text-green-700 stroke-3 bg-background rounded-full"/>
+      <CheckCircleIcon className="absolute -right-1 -bottom-1 size-2.5 
+        text-green-600 stroke-[2.5] bg-background rounded-full shadow-sm"/>
     )}
     {status === "loading" && (
-      <Loader2Icon className="absolute right-0.5 bottom-0.5 size-3 
-        text-blue-700 stroke-3 animate-spin"/>
+      <Loader2Icon className="absolute -right-1 -bottom-1 size-2.5 
+        text-blue-600 stroke-[2.5] animate-spin"/>
     )}
   </div>
 )
