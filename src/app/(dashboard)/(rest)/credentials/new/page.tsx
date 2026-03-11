@@ -1,7 +1,7 @@
 import { CredentialForm } from "@/features/credentials/components/credential";
 import { requireAuth } from "@/lib/auth-utils"
 
-const Page = async () => {
+export default async function Page() {
     await requireAuth();
 
     return (
