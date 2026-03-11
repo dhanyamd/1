@@ -12,7 +12,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const channelMap: Record<string, () => ReturnType<typeof GeminiChannel>> = {
+const channelMap: Record<string, any> = {
     gemini: GeminiChannel,
     "http-request": httpRequestChannel,
     "manual-request": manualRequestChannel,
@@ -24,20 +24,25 @@ const channelMap: Record<string, () => ReturnType<typeof GeminiChannel>> = {
 };
 
 export async function GET(req: NextRequest) {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    try {
+        const session = await auth.api.getSession({ headers: await headers() });
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const channelKey = req.nextUrl.searchParams.get("channel");
+        if (!channelKey || !channelMap[channelKey]) {
+            return NextResponse.json({ error: "Invalid channel" }, { status: 400 });
+        }
+
+        const token = await getSubscriptionToken(inngest, {
+            channel: channelMap[channelKey],
+            topics: ["status"],
+        });
+
+        return NextResponse.json({ token });
+    } catch (error: any) {
+        console.error("REALTIME TOKEN ERROR", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
-    const channel = req.nextUrl.searchParams.get("channel");
-    if (!channel || !channelMap[channel]) {
-        return NextResponse.json({ error: "Invalid channel" }, { status: 400 });
-    }
-
-    const token = await getSubscriptionToken(inngest, {
-        channel: (channelMap[channel] as any)(),
-        topics: ["status"],
-    });
-
-    return NextResponse.json({ token });
 }
