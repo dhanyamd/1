@@ -1,15 +1,12 @@
 'use client'
 import { BaseExecutionNode } from "@/components/base-execution-node";
-import {Node,useReactFlow,  NodeProps } from "@xyflow/react";
+import { Node, useReactFlow, NodeProps } from "@xyflow/react";
 import { GlobeIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { useNodeStatus } from "@/features/hooks/use-node-status";
-import { HTTP_REQUEST_CHANNEL_NAME, httpRequestChannel } from "@/inngest/channels/http-request";
-import { fetchHttpRequestRealtimeToken } from "@/features/actions";
-import { HttpRequestDialog, HttpRequestFormValues } from "@/features/editor/components/http-request/dialog";
-import { GeminiDialog, GeminiFormValues } from "./dialog";
 import { GEMINI_CHANNEL_NAME } from "@/inngest/channels/gemini";
 import { fetchGeminiRealtimeToken } from "./actions";
+import { GeminiDialog, GeminiFormValues } from "./dialog";
 
 type GeminiNodeData = {
     variableName?: string;

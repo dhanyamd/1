@@ -1,5 +1,5 @@
 import { PAGINATION } from '@/config/constants'
-import { parseAsInteger, parseAsString } from 'nuqs/server'
+import { parseAsInteger, parseAsString } from 'nuqs'
 export const workflowParams = {
       page: parseAsInteger
             .withDefault(PAGINATION.DEFAULT_PAGE)
