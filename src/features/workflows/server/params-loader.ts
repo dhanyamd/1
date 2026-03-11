@@ -1,4 +1,14 @@
-import { workflowParams } from "../params";
-import { createLoader } from "nuqs/server";
+import { createLoader, parseAsInteger, parseAsString } from "nuqs/server";
+import { PAGINATION } from '@/config/constants';
 
-export const workflowsParamsLoader = createLoader(workflowParams)
+export const workflowsParamsLoader = createLoader({
+    page: parseAsInteger
+        .withDefault(PAGINATION.DEFAULT_PAGE)
+        .withOptions({ clearOnDefault: true }),
+    pageSize: parseAsInteger
+        .withDefault(PAGINATION.DEFAULT_PAGE_SIZE)
+        .withOptions({ clearOnDefault: true }),
+    search: parseAsString
+        .withDefault("")
+        .withOptions({ clearOnDefault: true })
+})
