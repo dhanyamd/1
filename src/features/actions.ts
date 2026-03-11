@@ -1,3 +1,4 @@
+'use server'
 import { httpRequestChannel } from "@/inngest/channels/http-request";
 import { manualRequestChannel } from "@/inngest/channels/manual-request";
 import { inngest } from "@/inngest/client";

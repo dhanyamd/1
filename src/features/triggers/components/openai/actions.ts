@@ -1,3 +1,4 @@
+'use server'
 import { GeminiChannel } from "@/inngest/channels/gemini";
 import { httpRequestChannel } from "@/inngest/channels/http-request";
 import { manualRequestChannel } from "@/inngest/channels/manual-request";

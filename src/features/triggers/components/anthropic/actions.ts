@@ -1,3 +1,4 @@
+'use server'
 import { AnthropicChannel } from "@/inngest/channels/anthropic";
 import { inngest } from "@/inngest/client";
 import { getSubscriptionToken, Realtime } from "@inngest/realtime";
