@@ -1,7 +1,5 @@
 'use server'
 import { googleFormTriggerChannel } from "@/inngest/channels/google-form-trigger";
-import { httpRequestChannel } from "@/inngest/channels/http-request";
-import { manualRequestChannel } from "@/inngest/channels/manual-request";
 import { inngest } from "@/inngest/client";
 import { getSubscriptionToken, Realtime } from "@inngest/realtime";
 
