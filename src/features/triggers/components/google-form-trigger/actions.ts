@@ -1,10 +1,14 @@
-import { Realtime } from "@inngest/realtime";
+'use server'
+import { getSubscriptionToken, Realtime } from "@inngest/realtime";
+import { inngest } from "@/inngest/client";
 import { googleFormTriggerChannel } from "@/inngest/channels/google-form-trigger";
 
 export type GoogleFormTriggerToken = Realtime.Token<typeof googleFormTriggerChannel, ["status"]>;
 
 export async function fetchGoogleFormTriggerRealtimeToken(): Promise<GoogleFormTriggerToken> {
-    const res = await fetch("/api/realtime-token?channel=google-form-trigger");
-    const data = await res.json();
-    return data.token;
+    const token = await getSubscriptionToken(inngest, {
+        channel: googleFormTriggerChannel(),
+        topics: ["status"]
+    });
+    return token
 }
